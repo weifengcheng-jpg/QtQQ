@@ -3,6 +3,8 @@
 #include "basicwindow.h"
 #include "ui_CCMainWindow.h"
 
+class QTreeWidgetItem;
+
 class CCMainWindow : public BasicWindow
 {
 	Q_OBJECT
@@ -18,17 +20,23 @@ public:
 	void setStatusMenuIcon(const QString& statusPath);//设置状态
 	//添加应用部件(app图片路径，app部件对象名)
 	QWidget* addOtherAppExtension(const QString& appPath, const QString& appName);
+	void initContactTree();
 
 private:
 	void initTimer();	//初始化计时器
 	void initControl();
 	void updateSeachStyle(); //更新搜索样式
+	void addCompanyDeps(QTreeWidgetItem* pRootGroupItem, const QString& sDeps);
 
 private:
 	void resizeEvent(QResizeEvent* event);
 	bool eventFilter(QObject* obj, QEvent* event);
-private slots:
 
+private slots:
+	void onItemClicked(QTreeWidgetItem* item, int column);
+	void onItemExpanded(QTreeWidgetItem* item);
+	void onItemCollapsed(QTreeWidgetItem* item);
+	void onItemDoubleClicked(QTreeWidgetItem* item, int column);
 	void onAppIconClicked();
 private:
 	Ui::CCMainWindowClass ui;
