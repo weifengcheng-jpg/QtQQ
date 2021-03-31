@@ -4,6 +4,8 @@
 #include "NotifyManager.h"
 #include "RootContatItem.h"
 #include "ContactItem.h"
+#include "WindowManager.h"
+#include "TalkWindowShell.h"
 
 #include <QHBoxLayout>
 #include <QProxyStyle>
@@ -11,6 +13,8 @@
 #include <QTimer>
 #include <QEvent>
 #include <QTreeWidgetItem>
+#include <QMouseEvent>
+#include <QApplication>
 
 
 class CustomProxyStyle :public QProxyStyle
@@ -124,12 +128,17 @@ void CCMainWindow::addCompanyDeps(QTreeWidgetItem * pRootGroupItem, const QStrin
 
 	//添加子节点
 	pChild->setData(0, Qt::UserRole, 1);//子项数据设为1
+	pChild->setData(0, Qt::UserRole + 1, QString::number((int)pChild));
+
 	ContactItem* pContactItem = new ContactItem(ui.treeWidget);
 	pContactItem->setHeadPixmap(getRoundImage(QPixmap(":/Resources/MainWindow/girl.png"),pix,pContactItem->getHeadLabelSize()));
 	pContactItem->setUserName(sDeps);
 
 	pRootGroupItem->addChild(pChild);
 	ui.treeWidget->setItemWidget(pChild, 0, pContactItem);
+
+
+	m_groupMap.insert(pChild, sDeps);
 }
 
 void CCMainWindow::setUserName(const QString & username)
@@ -209,8 +218,8 @@ void CCMainWindow::initContactTree()
 {
 	//展开与收缩时的信号
 	connect(ui.treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onItemClicked(QTreeWidgetItem*, int)));
-	connect(ui.treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*, int)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));
-	connect(ui.treeWidget, SIGNAL(itemCollapsed(QTreeWidgetItem*, int)), this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
+	connect(ui.treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));
+	connect(ui.treeWidget, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
 	connect(ui.treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(onItemDoubleClicked(QTreeWidgetItem*, int)));
 
 	//根节点
@@ -268,6 +277,20 @@ bool CCMainWindow::eventFilter(QObject * obj, QEvent * event)
 	return false;
 }
 
+void CCMainWindow::mousePressEvent(QMouseEvent * event)
+{
+	if (qApp->widgetAt(event->pos()) != ui.searchLineEdit && ui.searchLineEdit->hasFocus())
+	{
+		ui.searchLineEdit->clearFocus();
+	}
+	else if (qApp->widgetAt(event->pos()) != ui.lineEdit && ui.lineEdit->hasFocus())
+	{
+		ui.lineEdit->clearFocus();
+	}
+
+	BasicWindow::mousePressEvent(event);
+}
+
 void CCMainWindow::onItemClicked(QTreeWidgetItem * item, int column)
 {
 	bool bIsChild = item->data(0, Qt::UserRole).toBool();
@@ -279,14 +302,59 @@ void CCMainWindow::onItemClicked(QTreeWidgetItem * item, int column)
 
 void CCMainWindow::onItemExpanded(QTreeWidgetItem * item)
 {
+	bool bIsChild = item->data(0, Qt::UserRole).toBool();
+	if (!bIsChild)
+	{
+		//dynamic_cast 将基类对象指针(或引用)转换到继承类指针
+		RootContatItem* prootItem = dynamic_cast<RootContatItem *>(ui.treeWidget->itemWidget(item, 0));
+		if(prootItem)
+		{ 
+			prootItem->setExpanded(true);
+		}
+			
+	}
 }
 
 void CCMainWindow::onItemCollapsed(QTreeWidgetItem * item)
 {
+	bool bIsChild = item->data(0, Qt::UserRole).toBool();
+	if (!bIsChild)
+	{
+		//dynamic_cast 将基类对象指针(或引用)转换到继承类指针
+		RootContatItem* prootItem = dynamic_cast<RootContatItem *>(ui.treeWidget->itemWidget(item, 0));
+		if (prootItem)
+		{
+			prootItem->setExpanded(false);
+
+		}
+
+	}
 }
 
 void CCMainWindow::onItemDoubleClicked(QTreeWidgetItem * item, int column)
 {
+	bool bIsChild = item->data(0, Qt::UserRole).toBool();
+	if (bIsChild)
+	{
+		QString strGroup = m_groupMap.value(item);
+
+		if (strGroup == QString::fromLocal8Bit("公司群"))
+		{
+			WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString(), COMPANY);
+		}
+		else if (strGroup == QString::fromLocal8Bit("人事部"))
+		{
+			WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString(), PERSONELGROUP);
+		}
+		else if (strGroup == QString::fromLocal8Bit("市场部"))
+		{
+			WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString(), MARKETGROUP);
+		}
+		else if (strGroup == QString::fromLocal8Bit("研发部"))
+		{
+			WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString(), DEVELOPMENTGROUP);
+		}
+	}
 }
 
 void CCMainWindow::onAppIconClicked()
