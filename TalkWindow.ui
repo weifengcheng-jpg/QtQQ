@@ -213,6 +213,24 @@
       </item>
       <item>
        <widget class="QWidget" name="funWidget" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>34</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>600</height>
+         </size>
+        </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <property name="spacing">
           <number>8</number>
@@ -654,20 +672,8 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="closeBtn">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+           <widget class="QToolButton" name="closeBtn">
             <property name="minimumSize">
-             <size>
-              <width>68</width>
-              <height>24</height>
-             </size>
-            </property>
-            <property name="maximumSize">
              <size>
               <width>68</width>
               <height>24</height>
@@ -682,20 +688,8 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="sendBtn">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+           <widget class="QToolButton" name="sendBtn">
             <property name="minimumSize">
-             <size>
-              <width>90</width>
-              <height>24</height>
-             </size>
-            </property>
-            <property name="maximumSize">
              <size>
               <width>90</width>
               <height>24</height>
@@ -771,6 +765,12 @@
             <width>280</width>
             <height>355</height>
            </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
           <widget class="QTreeWidget" name="treeWidget">
            <property name="geometry">

@@ -128,6 +128,7 @@ void CCMainWindow::addCompanyDeps(QTreeWidgetItem * pRootGroupItem, const QStrin
 
 	//添加子节点
 	pChild->setData(0, Qt::UserRole, 1);//子项数据设为1
+	QString s = QString::number((int)pChild);
 	pChild->setData(0, Qt::UserRole + 1, QString::number((int)pChild));
 
 	ContactItem* pContactItem = new ContactItem(ui.treeWidget);

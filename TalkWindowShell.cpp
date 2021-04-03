@@ -3,6 +3,7 @@
 #include "TalkWindow.h"
 #include "CommonUtils.h"
 #include <qlistwidget.h>
+#include "TalkWindowItem.h"
 
 TalkWindowShell::TalkWindowShell(QWidget *parent)
 	: BasicWindow(parent)
@@ -29,6 +30,22 @@ void TalkWindowShell::addTalkWindow(TalkWindow * talkWindow, TalkWindowItem * ta
 
 	aItem->setSelected(true);
 
+	talkWindowItem->setHeadPixmap("");//ÉèÖÃÍ·Ïñ
+	ui.listWidget->addItem(aItem);
+	ui.listWidget->setItemWidget(aItem, talkWindowItem);
+
+	onTalkWindowItemClicked(aItem);
+
+	connect(talkWindowItem, &TalkWindowItem::signalCloseClicked,
+		[talkWindowItem, talkWindow, aItem, this]() {
+		m_talkwindowItemMap.remove(aItem);
+		talkWindow->close();
+		ui.listWidget->takeItem(ui.listWidget->row(aItem));
+		delete talkWindowItem;
+		ui.rightStackedWidget->removeWidget(talkWindow);
+		if (ui.rightStackedWidget->count() < 1)
+			close();
+	});
 }
 
 void TalkWindowShell::setCurrentWidget(QWidget * widget)

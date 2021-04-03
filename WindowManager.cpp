@@ -94,6 +94,8 @@ void WindowManager::addNewTalkWindow(const QString & uid, GroupType groupType, c
 		default:
 			break;
 		}
+
+		m_talkwindowshell->addTalkWindow(talkwindow, talkwindowItem, groupType);
 	}
 	else
 	{
