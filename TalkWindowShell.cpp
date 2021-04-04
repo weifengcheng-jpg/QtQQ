@@ -53,6 +53,11 @@ void TalkWindowShell::setCurrentWidget(QWidget * widget)
 	ui.rightStackedWidget->setCurrentWidget(widget);
 }
 
+const QMap<QListWidgetItem*, QWidget*>& TalkWindowShell::getTalkWindowItemMap() const
+{
+	return m_talkwindowItemMap;
+}
+
 void TalkWindowShell::initControl()
 {
 	loadStyleSheet("TalkWindow");
