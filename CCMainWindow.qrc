@@ -358,5 +358,6 @@
         <file>Resources/MainWindow/MsgHtml/msgtmpl.js</file>
         <file>Resources/MainWindow/MsgHtml/qwebchannel.js</file>
         <file>Resources/MainWindow/MsgHtml/ui.css</file>
+        <file>Resources/MainWindow/MsgHtml/msgFont.txt</file>
     </qresource>
 </RCC>

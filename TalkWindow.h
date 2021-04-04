@@ -17,7 +17,7 @@ public:
 	void setWindowName(const QString& name);
 
 private slots:
-	void onSendBtnClicked();
+	void onSendBtnClicked(bool);
 	void onItemDoubleClicked(QTreeWidgetItem* item, int column);
 
 private:
