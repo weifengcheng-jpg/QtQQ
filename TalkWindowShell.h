@@ -9,13 +9,6 @@ class TalkWindowItem;
 class QListWidgetItem;
 class EmotionWindow;
 
-enum GroupType {
-	COMPANY = 0,	//公司群
-	PERSONELGROUP,	//人事部
-	DEVELOPMENTGROUP,//研发部
-	MARKETGROUP,	//市场部
-	PTOP			//同事之间单独聊天
-};
 
 class TalkWindowShell : public BasicWindow
 {
@@ -27,7 +20,7 @@ public:
 
 public:
 	//添加新的聊天窗口
-	void addTalkWindow(TalkWindow* talkWindow, TalkWindowItem* talkWindowItem, const QString& uid/*,GroupType grouptype*/);
+	void addTalkWindow(TalkWindow* talkWindow, TalkWindowItem* talkWindowItem, const QString& uid);
 	
 	//设置当前聊天窗口
 	void setCurrentWidget(QWidget* widget);

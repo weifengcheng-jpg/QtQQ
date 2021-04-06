@@ -20,7 +20,7 @@ TalkWindowShell::~TalkWindowShell()
 	m_emotionWindow = nullptr;
 }
 
-void TalkWindowShell::addTalkWindow(TalkWindow * talkWindow, TalkWindowItem * talkWindowItem,const QString& uid/*, GroupType grouptype*/)
+void TalkWindowShell::addTalkWindow(TalkWindow * talkWindow, TalkWindowItem * talkWindowItem,const QString& uid)
 {
 	ui.rightStackedWidget->addWidget(talkWindow);
 	connect(m_emotionWindow, SIGNAL(signalEmotionWindowHide()),

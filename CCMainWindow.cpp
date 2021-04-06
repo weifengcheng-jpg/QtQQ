@@ -154,9 +154,6 @@ void CCMainWindow::addCompanyDeps(QTreeWidgetItem * pRootGroupItem,int DepID)
 
 	pRootGroupItem->addChild(pChild);
 	ui.treeWidget->setItemWidget(pChild, 0, pContactItem);
-
-
-//	m_groupMap.insert(pChild, sDeps);
 }
 
 void CCMainWindow::setUserName(const QString & username)
@@ -359,25 +356,6 @@ void CCMainWindow::onItemDoubleClicked(QTreeWidgetItem * item, int column)
 	if (bIsChild)
 	{
 		WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString());
-//		QString strGroup = m_groupMap.value(item);
-/*
-		if (strGroup == QString::fromLocal8Bit("公司群"))
-		{
-			WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString(), COMPANY);
-		}
-		else if (strGroup == QString::fromLocal8Bit("人事部"))
-		{
-			WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString(), PERSONELGROUP);
-		}
-		else if (strGroup == QString::fromLocal8Bit("市场部"))
-		{
-			WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString(), MARKETGROUP);
-		}
-		else if (strGroup == QString::fromLocal8Bit("研发部"))
-		{
-			WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString(), DEVELOPMENTGROUP);
-		}
-		*/
 	}
 }
 

@@ -41,5 +41,4 @@ private slots:
 	void onAppIconClicked();
 private:
 	Ui::CCMainWindowClass ui;
-//	QMap<QTreeWidgetItem*, QString> m_groupMap;//所有分组的分组项
 };
