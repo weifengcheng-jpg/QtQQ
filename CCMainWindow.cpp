@@ -37,12 +37,15 @@ public:
 	}
 };
 
-CCMainWindow::CCMainWindow(QWidget *parent)
+CCMainWindow::CCMainWindow(QString account, bool isAccountLogin, QWidget *parent)
 	: BasicWindow(parent)
+	,m_isAccountLogin(isAccountLogin)
+	,m_account(account)
 {
 	ui.setupUi(this);
 	setWindowFlags(windowFlags() | Qt::Tool);
 	loadStyleSheet("CCMainWindow");
+	setHeadPixmap(getHeadPicturePath());
 	initControl();
 	initTimer();
 }
@@ -74,7 +77,6 @@ void CCMainWindow::initControl()
 	//Ê÷»ñÈ¡½¹µãÊ±²»»æÖÆ±ß¿ò
 	ui.treeWidget->setStyle(new CustomProxyStyle);
 	setLevelPixmap(0);
-	setHeadPixmap(":/Resources/MainWindow/girl.png");
 	setStatusMenuIcon(":/Resources/MainWindow/StatusSucceeded.png");
 
 	QHBoxLayout *appupLayout = new QHBoxLayout;
@@ -111,6 +113,37 @@ void CCMainWindow::initControl()
 	});
 
 	SysTray* systray = new SysTray(this);
+}
+
+QString CCMainWindow::getHeadPicturePath()
+{
+	QString strPicturePath;
+
+	if (!m_isAccountLogin)//QQºÅµÇÂ¼
+	{
+		QSqlQuery queryPicture(QString("SELECT picture FROM tab_employees WHERE employeeID = %1").arg(gLoginEmployeeID));
+		queryPicture.exec();
+		queryPicture.next();
+
+		strPicturePath = queryPicture.value(0).toString();
+	}
+	else//ÕËºÅµÇÂ¼
+	{
+		QSqlQuery queryEmployeeID(QString("SELECT employeeID FROM tab_accounts WHERE account = '%1'").arg(m_account));
+		queryEmployeeID.exec();
+		queryEmployeeID.next();
+
+		int employeeID = queryEmployeeID.value(0).toInt();
+
+		QSqlQuery queryPicture(QString("SELECT picture FROM tab_employees WHERE employeeID = %1").arg(employeeID));
+		queryPicture.exec();
+		queryPicture.next();
+
+		strPicturePath = queryPicture.value(0).toString();
+	}
+
+
+	return strPicturePath;
 }
 
 void CCMainWindow::updateSeachStyle()

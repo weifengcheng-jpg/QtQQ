@@ -26,7 +26,7 @@ void UserLogin::initControl()
 	QLabel *headlabel = new QLabel(this);
 	headlabel->setFixedSize(68, 68);
 	QPixmap pix(":/Resources/MainWindow/head_mask.png");
-	headlabel->setPixmap(getRoundImage(QPixmap(":/Resources/MainWindow/girl.png"), pix, headlabel->size()));
+	headlabel->setPixmap(getRoundImage(QPixmap(":/Resources/MainWindow/app/logo.ico"), pix, headlabel->size()));
 	headlabel->move(width() / 2 - 34, ui.titleWidget->height() - 34);
 	connect(ui.loginBtn, &QPushButton::clicked, this, &UserLogin::onLoginBtnClicked);
 
@@ -58,7 +58,7 @@ bool UserLogin::connectMySql()
 	}
 }
 
-bool UserLogin::veryfyAccountCode()
+bool UserLogin::veryfyAccountCode(bool &isAccountLogin, QString &strAccount)
 {
 	QString strAccountInput = ui.editUserAccount->text();
 	QString strCodeInput = ui.editPassword->text();
@@ -76,6 +76,9 @@ bool UserLogin::veryfyAccountCode()
 		if (strCode == strCodeInput)
 		{
 			gLoginEmployeeID = strAccountInput;
+			
+			isAccountLogin = false;
+			strAccount = strAccountInput;
 			return true;
 		}
 		else
@@ -96,6 +99,9 @@ bool UserLogin::veryfyAccountCode()
 		if (strCode == strCodeInput)
 		{
 			gLoginEmployeeID = queryAccount.value(1).toString();
+			
+			strAccount = strAccountInput;
+			isAccountLogin = true;
 			return true;
 		}
 		else
@@ -110,7 +116,10 @@ bool UserLogin::veryfyAccountCode()
 
 void UserLogin::onLoginBtnClicked()
 {
-	if (!veryfyAccountCode())
+	bool isAccountLogin;
+	QString strAccount;//账号或QQ号
+
+	if (!veryfyAccountCode(isAccountLogin,strAccount))
 	{
 		QMessageBox::information(NULL, QString::fromLocal8Bit("提示"),
 			QString::fromLocal8Bit("您输入的账号或密码有误，请重新输入！"));
@@ -120,6 +129,6 @@ void UserLogin::onLoginBtnClicked()
 	}
 
 	close();
-	CCMainWindow* mainwindow = new CCMainWindow;
+	CCMainWindow* mainwindow = new CCMainWindow(strAccount,isAccountLogin);
 	mainwindow->show();
 }

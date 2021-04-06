@@ -24,7 +24,7 @@ private:
 	void initControl();
 	void initGroupTalkStatus();
 	int getCompDepID();
-	
+
 	void initTalkWindow();		//初始化群聊
 	void initPtoPTalk();		//初始化单聊
 	void addPeopInfo(QTreeWidgetItem* pRootGroupItem,int employeeID);

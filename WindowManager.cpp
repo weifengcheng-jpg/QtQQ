@@ -84,7 +84,7 @@ void WindowManager::addNewTalkWindow(const QString & uid)
 		talkwindow->setWindowName(strWindowName);//窗口名称
 		talkwindowItem->setMsgLabelContent(strMsgLabel);//左侧联系人文本显示
 		m_talkwindowshell->addTalkWindow(talkwindow, talkwindowItem,uid);
-		
+
 	}
 	else
 	{

@@ -10,7 +10,7 @@ class CCMainWindow : public BasicWindow
 	Q_OBJECT
 
 public:
-	CCMainWindow(QWidget *parent = Q_NULLPTR);
+	CCMainWindow(QString account,bool isAccountLogin, QWidget *parent = Q_NULLPTR);
 	~CCMainWindow();
 
 public:
@@ -25,9 +25,10 @@ public:
 private:
 	void initTimer();	//初始化计时器
 	void initControl();
+	QString getHeadPicturePath();
 	void updateSeachStyle(); //更新搜索样式
 	void addCompanyDeps(QTreeWidgetItem* pRootGroupItem, int DepID);
-
+	
 private:
 	void resizeEvent(QResizeEvent* event);
 	bool eventFilter(QObject* obj, QEvent* event);
@@ -41,4 +42,6 @@ private slots:
 	void onAppIconClicked();
 private:
 	Ui::CCMainWindowClass ui;
+	bool m_isAccountLogin;
+	QString m_account;		//登录的账号或QQ号
 };
