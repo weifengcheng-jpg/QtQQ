@@ -16,6 +16,9 @@
 #include <QMouseEvent>
 #include <QApplication>
 
+#include <QSqlQuery>
+
+extern QString gLoginEmployeeID;
 
 class CustomProxyStyle :public QProxyStyle
 {
@@ -119,7 +122,7 @@ void CCMainWindow::updateSeachStyle()
 										.arg(m_colorBackGround.blue()));
 }
 
-void CCMainWindow::addCompanyDeps(QTreeWidgetItem * pRootGroupItem, const QString & sDeps)
+void CCMainWindow::addCompanyDeps(QTreeWidgetItem * pRootGroupItem,int DepID)
 {
 	QTreeWidgetItem* pChild = new QTreeWidgetItem;
 
@@ -128,18 +131,32 @@ void CCMainWindow::addCompanyDeps(QTreeWidgetItem * pRootGroupItem, const QStrin
 
 	//添加子节点
 	pChild->setData(0, Qt::UserRole, 1);//子项数据设为1
-	QString s = QString::number((int)pChild);
-	pChild->setData(0, Qt::UserRole + 1, QString::number((int)pChild));
+	pChild->setData(0, Qt::UserRole + 1, DepID);
+
+	//获取公司、部门头像
+	QPixmap groupPix;
+	QSqlQuery queryPicture(QString("SELECT picture FROM tab_department WHERE departmentID = %1").arg(DepID));
+	queryPicture.exec();
+	queryPicture.next();
+	groupPix.load(queryPicture.value(0).toString());
+
+	//获取部门名称
+	QString strDepName;
+	QSqlQuery querDepName(QString("SELECT department_name FROM tab_department WHERE departmentID = %1").arg(DepID));
+	querDepName.exec();
+	querDepName.first();
+	strDepName = querDepName.value(0).toString();
+
 
 	ContactItem* pContactItem = new ContactItem(ui.treeWidget);
-	pContactItem->setHeadPixmap(getRoundImage(QPixmap(":/Resources/MainWindow/girl.png"),pix,pContactItem->getHeadLabelSize()));
-	pContactItem->setUserName(sDeps);
+	pContactItem->setHeadPixmap(getRoundImage(groupPix,pix,pContactItem->getHeadLabelSize()));
+	pContactItem->setUserName(strDepName);
 
 	pRootGroupItem->addChild(pChild);
 	ui.treeWidget->setItemWidget(pChild, 0, pContactItem);
 
 
-	m_groupMap.insert(pChild, sDeps);
+//	m_groupMap.insert(pChild, sDeps);
 }
 
 void CCMainWindow::setUserName(const QString & username)
@@ -227,26 +244,30 @@ void CCMainWindow::initContactTree()
 	QTreeWidgetItem* pRootGroupItem = new QTreeWidgetItem;
 	pRootGroupItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 	pRootGroupItem->setData(0, Qt::UserRole, 0);//根项数据设为0
-
 	RootContatItem* pItemName = new RootContatItem(true, ui.treeWidget);
 	
+	//获取公司部门ID(公司群号)
+	QSqlQuery queryCompDepID(QString("SELECT departmentID FROM tab_department WHERE department_name = '%1'").arg(QString::fromLocal8Bit("公司群")));
+	queryCompDepID.exec();
+	queryCompDepID.first();
+	int CompDepID = queryCompDepID.value(0).toInt();
+
+	//获取QQ登录者所在的部门ID（部门群号）
+	QSqlQuery querySelfDepID(QString("SELECT departmentID FROM tab_employees WHERE employeeID = %1").arg(gLoginEmployeeID));
+	querySelfDepID.exec();
+	querySelfDepID.first();
+	int SelfDepID = querySelfDepID.value(0).toInt();
+
+	//初始化公司群及登录者所在的群
+	addCompanyDeps(pRootGroupItem, CompDepID);
+	addCompanyDeps(pRootGroupItem, SelfDepID);
+
 	QString strGroupName = QString::fromLocal8Bit("奇牛科技");
 	pItemName->setText(strGroupName);
 
 	//插入分组节点
 	ui.treeWidget->addTopLevelItem(pRootGroupItem);
 	ui.treeWidget->setItemWidget(pRootGroupItem, 0, pItemName);
-
-	QStringList sCompDeps;//公司部门
-	sCompDeps << QString::fromLocal8Bit("公司群");
-	sCompDeps << QString::fromLocal8Bit("人事部");
-	sCompDeps << QString::fromLocal8Bit("研发部");
-	sCompDeps << QString::fromLocal8Bit("市场部");
-
-	for (int nIndex = 0; nIndex < sCompDeps.length(); nIndex++)
-	{
-		addCompanyDeps(pRootGroupItem, sCompDeps.at(nIndex));
-	}
 }
 
 void CCMainWindow::resizeEvent(QResizeEvent * event)
@@ -337,8 +358,9 @@ void CCMainWindow::onItemDoubleClicked(QTreeWidgetItem * item, int column)
 	bool bIsChild = item->data(0, Qt::UserRole).toBool();
 	if (bIsChild)
 	{
-		QString strGroup = m_groupMap.value(item);
-
+		WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString());
+//		QString strGroup = m_groupMap.value(item);
+/*
 		if (strGroup == QString::fromLocal8Bit("公司群"))
 		{
 			WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString(), COMPANY);
@@ -355,6 +377,7 @@ void CCMainWindow::onItemDoubleClicked(QTreeWidgetItem * item, int column)
 		{
 			WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString(), DEVELOPMENTGROUP);
 		}
+		*/
 	}
 }
 

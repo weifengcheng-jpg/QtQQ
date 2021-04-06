@@ -4,6 +4,7 @@
 #include "CommonUtils.h"
 #include <qlistwidget.h>
 #include "TalkWindowItem.h"
+#include <QSqlQueryModel>
 
 TalkWindowShell::TalkWindowShell(QWidget *parent)
 	: BasicWindow(parent)
@@ -19,7 +20,7 @@ TalkWindowShell::~TalkWindowShell()
 	m_emotionWindow = nullptr;
 }
 
-void TalkWindowShell::addTalkWindow(TalkWindow * talkWindow, TalkWindowItem * talkWindowItem, GroupType grouptype)
+void TalkWindowShell::addTalkWindow(TalkWindow * talkWindow, TalkWindowItem * talkWindowItem,const QString& uid/*, GroupType grouptype*/)
 {
 	ui.rightStackedWidget->addWidget(talkWindow);
 	connect(m_emotionWindow, SIGNAL(signalEmotionWindowHide()),
@@ -30,7 +31,28 @@ void TalkWindowShell::addTalkWindow(TalkWindow * talkWindow, TalkWindowItem * ta
 
 	aItem->setSelected(true);
 
-	talkWindowItem->setHeadPixmap("");//设置头像
+
+
+	//判断是群聊还是单聊
+	QSqlQueryModel sqlDepModel;
+	QString strQuery = QString("SELECT picture FROM tab_department WHERE departmentID = %1").arg(uid);
+	sqlDepModel.setQuery(strQuery);
+	int rows = sqlDepModel.rowCount();
+
+	if (rows == 0)//单聊
+	{
+		strQuery = QString("SELECT picture FROM tab_employees WHERE employeeID = %1").arg(uid);
+		sqlDepModel.setQuery(strQuery);
+	}
+
+	QModelIndex index;
+	index = sqlDepModel.index(0, 0);//行，列
+	
+	QImage img;
+	img.load(sqlDepModel.data(index).toString());
+
+	talkWindowItem->setHeadPixmap(QPixmap::fromImage(img));//设置头像
+	
 	ui.listWidget->addItem(aItem);
 	ui.listWidget->setItemWidget(aItem, talkWindowItem);
 

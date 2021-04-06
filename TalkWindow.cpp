@@ -7,10 +7,10 @@
 #include <QFile>
 #include <QMessageBox>
 
-TalkWindow::TalkWindow(QWidget *parent, const QString& uid, GroupType groupType)
+TalkWindow::TalkWindow(QWidget *parent, const QString& uid/*, GroupType groupType*/)
 	: QWidget(parent)
 	,m_talkId(uid)
-	,m_groupType(groupType)
+//	,m_groupType(groupType)
 {
 	ui.setupUi(this);
 	WindowManager::getInstance()->addWindowName(m_talkId, this);
@@ -84,7 +84,7 @@ void TalkWindow::onItemDoubleClicked(QTreeWidgetItem* item, int column)
 	if (bIsChild)
 	{
 		QString strPeopleName = m_groupPeopleMap.value(item);
-		WindowManager::getInstance()->addNewTalkWindow(item->data(0,Qt::UserRole + 1).toString(), PTOP, strPeopleName);
+		WindowManager::getInstance()->addNewTalkWindow(item->data(0,Qt::UserRole + 1).toString()/*, PTOP, strPeopleName*/);
 	}
 }
 
@@ -106,6 +106,7 @@ void TalkWindow::initControl()
 
 	connect(ui.treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(onItemDoubleClicked(QTreeWidgetItem*, int)));
 
+	/*
 	switch (m_groupType)
 	{
 	case COMPANY:
@@ -134,6 +135,7 @@ void TalkWindow::initControl()
 		break;
 	}	
 	}
+	*/
 }
 
 void TalkWindow::initCompanyTalk()

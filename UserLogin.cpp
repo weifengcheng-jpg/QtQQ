@@ -4,6 +4,8 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
+QString gLoginEmployeeID;//登录者QQ好(员工号)
+
 UserLogin::UserLogin(QWidget *parent)
 	: BasicWindow(parent)
 {
@@ -73,6 +75,7 @@ bool UserLogin::veryfyAccountCode()
 
 		if (strCode == strCodeInput)
 		{
+			gLoginEmployeeID = strAccountInput;
 			return true;
 		}
 		else
@@ -92,6 +95,7 @@ bool UserLogin::veryfyAccountCode()
 
 		if (strCode == strCodeInput)
 		{
+			gLoginEmployeeID = queryAccount.value(1).toString();
 			return true;
 		}
 		else
