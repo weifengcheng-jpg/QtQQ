@@ -12,6 +12,7 @@ TalkWindowShell::TalkWindowShell(QWidget *parent)
 	ui.setupUi(this);
 	setAttribute(Qt::WA_DeleteOnClose);
 	initControl();
+	initTcpSocket();
 }
 
 TalkWindowShell::~TalkWindowShell()
@@ -98,6 +99,12 @@ void TalkWindowShell::initControl()
 	connect(m_emotionWindow, SIGNAL(signalEmotionItemClicked(int)), this, SLOT(onEmotionItemClicked(int)));
 }
 
+void TalkWindowShell::initTcpSocket()
+{
+	m_tcpClientSocket = new QTcpSocket(this);
+	m_tcpClientSocket->connectToHost("127.0.0.1", gtcpPort);
+}
+
 void TalkWindowShell::onEmotionBtnClicked(bool)
 {
 	m_emotionWindow->setVisible(!m_emotionWindow->isVisible());
@@ -106,6 +113,10 @@ void TalkWindowShell::onEmotionBtnClicked(bool)
 	emotionPoint.setX(emotionPoint.x() + 170);
 	emotionPoint.setY(emotionPoint.y() + 220);
 	m_emotionWindow->move(emotionPoint);
+}
+
+void TalkWindowShell::updateSendTcpMsg(QString & strData, int & msgType, QString sFile)
+{
 }
 
 void TalkWindowShell::onTalkWindowItemClicked(QListWidgetItem * item)

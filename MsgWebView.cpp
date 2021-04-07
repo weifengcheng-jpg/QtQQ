@@ -4,6 +4,8 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QWebChannel>
+#include "TalkWindowShell.h"
+#include "WindowManager.h"
 
 MsgHtmlObj::MsgHtmlObj(QObject* parent) :QObject(parent)
 {
@@ -53,6 +55,9 @@ MsgWebView::MsgWebView(QWidget *parent)
 	channel->registerObject("external", m_msgHtmlObj);
 	this->page()->setWebChannel(channel);
 
+	TalkWindowShell* talkWindowShell = WindowManager::getInstance()->getTalkWindowShell();
+	connect(this, &MsgWebView::signalSendMsg, talkWindowShell, &TalkWindowShell::updateSendTcpMsg);
+	
 	//初始化收信息页面
 	this->load(QUrl("qrc:/Resources/MainWindow/MsgHtml/msgTmpl.html"));
 }
@@ -67,12 +72,45 @@ void MsgWebView::appendMsg(const QString & html)
 	QString qsMsg;
 	const QList<QStringList> msgLst = parseHtml(html);//解析html
 
+	int imageNum = 0;
+	int msgType = 1;//信息类型：0是表情 1文本 2文件
+	QString strData;//发送的数据
+	
+
 	for (int i = 0; i < msgLst.size(); i++)
 	{
 		if (msgLst.at(i).at(0) == "img")
 		{
 			QString imagePath = msgLst.at(i).at(1);
 			QPixmap pixmap;
+
+			//获取表情名称的位置
+			QString strEmotionPath = "qrc:/Resources/MainWindow/emotion/";
+			int pos = strEmotionPath.size();
+
+			//获取表情名称
+			QString strEmotionName = imagePath.mid(pos);
+			strEmotionName.replace(".png", "");
+
+			//根据表情名称的长度进行设置表情数据
+			//不足3位则补足3位,如23则数据为023
+			int emotionNameL = strEmotionName.length();
+			if (emotionNameL == 1)
+			{
+				strData = strData + "00" + strEmotionName;
+			}
+			else if (emotionNameL == 2)
+			{
+				strData = strData + "0" + strEmotionName;
+			}
+			else if (emotionNameL == 3)
+			{
+				strData = strData + strEmotionName;
+			}
+
+			msgType = 0;//表情信息
+			imageNum++;
+
 			if (imagePath.left(3) == "qrc")
 			{
 				pixmap.load(imagePath.mid(3));//去掉表情路径中qrc
@@ -90,6 +128,7 @@ void MsgWebView::appendMsg(const QString & html)
 		else if (msgLst.at(i).at(0) == "text")
 		{
 			qsMsg += msgLst.at(i).at(1);
+			strData = qsMsg;
 		}
 	}
 
@@ -97,6 +136,8 @@ void MsgWebView::appendMsg(const QString & html)
 
 	const QString& Msg = QJsonDocument(msgObj).toJson(QJsonDocument::Compact);
 	this->page()->runJavaScript(QString("appendHtml(%1)").arg(Msg));
+	
+	emit signalSendMsg(strData, msgType);
 }
 
 QList<QStringList> MsgWebView::parseHtml(const QString & html)
